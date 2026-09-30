@@ -54,6 +54,7 @@ export const api = {
     },
     sensors: { status: (engine_id = 'ENG-001') => get(`/sensors/status?engine_id=${engine_id}`) },
     fleet: { get: () => get('/fleet/') },
+    xai: { getMaintenanceRationale: (fault_type, confidence) => get(`/xai/maintenance-rationale/${fault_type}?confidence=${confidence}`) },
     alerts: {
         list: (engine_id = 'ENG-001') => get(`/alerts/?engine_id=${engine_id}`),
         acknowledge: (id) => put(`/alerts/${id}/acknowledge`),

@@ -20,6 +20,7 @@ import Page13_SensorQuality from './pages/Page13_SensorQuality'
 import Page14_TelemetryECU from './pages/Page14_TelemetryECU'
 import Page15_FleetView from './pages/Page15_FleetView'
 import Page16_Configuration from './pages/Page16_Configuration'
+import Page17_2DCrossSection from './pages/Page17_2DCrossSection'
 
 export default function App() {
   useEffect(() => {
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="/telemetry-ecu" element={<Page14_TelemetryECU />} />
             <Route path="/fleet" element={<Page15_FleetView />} />
             <Route path="/configuration" element={<Page16_Configuration />} />
+            <Route path="/cross-section" element={<Page17_2DCrossSection />} />
           </Routes>
         </main>
       </div>
