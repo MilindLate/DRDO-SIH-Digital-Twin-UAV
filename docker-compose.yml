@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  # ──────────────────────────────────────────────────────────────────
+  # Backend API + Digital Twin Engine
+  # ──────────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dt-uav-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/digital_twin.db
+      - ENVIRONMENT=development
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:4173
+      - LOG_LEVEL=INFO
+      - SEED_DATA=true
+    volumes:
+      - ./backend:/app
+      - ./simulator:/app/simulator
+      - ./ml:/app/ml
+      - backend_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - dt-network
+
+  # ──────────────────────────────────────────────────────────────────
+  # Frontend React Application
+  # ──────────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8000
+        - VITE_WS_URL=ws://localhost:8000
+    container_name: dt-uav-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - dt-network
+
+networks:
+  dt-network:
+    driver: bridge
+
+volumes:
+  backend_data:
+    driver: local

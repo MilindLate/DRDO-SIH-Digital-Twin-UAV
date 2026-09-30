@@ -1,0 +1,153 @@
+# Engine Physics Configuration
+# ─────────────────────────────────────────────────────────────────────────────
+# IMPORTANT: ALL VALUES ARE SIMULATED / CONFIGURABLE
+# This file does NOT represent certified engine specifications.
+# All limits are demonstration values for research purposes only.
+# Do NOT use for operational flight planning or maintenance decisions.
+#
+# References:
+#   - Heywood, J.B. (1988). Internal Combustion Engine Fundamentals. McGraw-Hill.
+#   - Taylor, C.F. (1985). The Internal Combustion Engine in Theory and Practice.
+#   - FAA AC 65-12A — Airframe and Powerplant Mechanics Powerplant Handbook
+#   - ISA Standard Atmosphere: ICAO Doc 7488 (public standard)
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+engine:
+  model_name: "Generic Aero Piston Engine (Simulated)"
+  
+  # Physical configuration [SIMULATED/CONFIGURABLE]
+  cylinders: 4
+  displacement_cc: 2000.0         # cm³ total displacement
+  compression_ratio: 8.5          # dimensionless
+
+  # RPM limits [SIMULATED/CONFIGURABLE — NOT CERTIFIED]
+  rpm_idle: 900.0
+  rpm_max_continuous: 5500.0
+  rpm_max_rated: 5800.0
+  rpm_redline: 6000.0
+
+  # Power output [SIMULATED/CONFIGURABLE]
+  max_power_kw: 75.0              # Approximate max power at rated RPM
+
+  # Thermal limits [SIMULATED/CONFIGURABLE — NOT CERTIFIED AIRWORTHINESS LIMITS]
+  cht_normal_max_c: 200.0         # CHT normal max (Celsius)
+  cht_warning_c: 220.0            # CHT warning threshold
+  cht_critical_c: 240.0           # CHT critical threshold
+  egt_normal_max_c: 700.0         # EGT normal max
+  egt_warning_c: 750.0            # EGT warning
+  egt_critical_c: 800.0           # EGT critical
+
+  # Lubrication [SIMULATED/CONFIGURABLE]
+  oil_pressure_min_kpa: 200.0     # Min operating oil pressure
+  oil_pressure_normal_kpa: 350.0  # Normal operating oil pressure
+  oil_pressure_max_kpa: 550.0     # Max operating oil pressure
+  oil_temp_normal_max_c: 110.0    # Max normal oil temperature
+  oil_temp_warning_c: 120.0       # Oil temp warning
+  oil_temp_critical_c: 130.0      # Oil temp critical
+
+  # Fuel system [SIMULATED/CONFIGURABLE]
+  afr_stoichiometric: 14.7        # Gasoline stoichiometric AFR (public chemistry)
+  afr_best_power: 12.5            # Rich of stoich [SIMULATED]
+  afr_best_economy: 15.5          # Lean of stoich [SIMULATED]
+  fuel_density_kg_l: 0.720        # Avgas density kg/L (approximate public value)
+
+  # Electrical [SIMULATED/CONFIGURABLE]
+  alternator_voltage_nominal_v: 14.2
+  battery_voltage_nominal_v: 12.6
+  battery_voltage_min_v: 11.5
+  alternator_voltage_warning_v: 13.5
+
+  # Vibration [SIMULATED/CONFIGURABLE]
+  vibration_normal_max_g: 0.5     # Normal max vibration RMS (g)
+  vibration_warning_g: 1.0        # Warning threshold
+  vibration_critical_g: 2.0       # Critical threshold
+
+  # Reliability [SIMULATED/CONFIGURABLE — NOT VALIDATED TBO]
+  tbo_hours: 1500.0               # Time Between Overhaul (demonstration value)
+
+  # Physics parameters [SIMULATED — See physics_model.py for documentation]
+  mechanical_efficiency: 0.88
+  volumetric_efficiency_peak: 0.82
+  indicated_thermal_efficiency: 0.32
+  cooling_coefficient: 0.15
+  oil_specific_heat: 1800.0       # J/kg·K
+  oil_mass_kg: 3.5
+
+fleet:
+  # UAV configuration [SIMULATED]
+  max_endurance_hours: 24.0
+  max_altitude_m: 6000.0
+  payload_capacity_kg: 150.0
+
+simulation:
+  # Simulator defaults
+  update_rate_hz: 1.0             # Default telemetry update rate
+  demo_mode_speed: 1.0            # Speed multiplier for demo
+  noise_enabled: true             # Enable sensor noise simulation
+  fuel_quantity_l: 80.0           # Initial fuel quantity
+
+health:
+  # Health index weights [CONFIGURABLE] — must sum to 1.0
+  # DEMONSTRATION MODEL — not validated aerospace health metric
+  weights:
+    thermal: 0.20
+    mechanical: 0.20
+    lubrication: 0.15
+    combustion: 0.15
+    fuel: 0.10
+    electrical: 0.10
+    sensor: 0.05
+    vibration: 0.05
+
+  # Health categories [CONFIGURABLE]
+  thresholds:
+    excellent: 85.0
+    healthy: 70.0
+    degraded: 50.0
+    poor: 30.0
+    critical: 0.0
+
+  # RUL model [DEMONSTRATION MODEL — NOT VALIDATED]
+  rul:
+    base_tbo_hours: 1500.0
+    maintenance_threshold_pct: 30.0
+    confidence_level: 0.80
+    disclaimer: "SIMULATION-BASED ESTIMATE. Not validated against real failure data."
+
+ml:
+  # ML model configuration [DEMONSTRATION MODEL]
+  anomaly_detection:
+    algorithm: "IsolationForest"
+    contamination: 0.05
+    n_estimators: 100
+    training_samples: 500
+
+  fault_classification:
+    algorithm: "RandomForestClassifier"
+    n_estimators: 100
+    classes:
+      - "NORMAL"
+      - "INJECTOR_DEGRADATION"
+      - "LUBRICATION_ISSUE"
+      - "OVERHEATING"
+      - "VIBRATION_FAULT"
+      - "COMBUSTION_INSTABILITY"
+
+  features:
+    - rpm
+    - cht_c
+    - egt_c
+    - oil_pressure_kpa
+    - oil_temperature_c
+    - fuel_flow_lph
+    - vibration_rms_g
+    - engine_load_pct
+    - throttle_pct
+    - battery_voltage_v
+    - alternator_voltage_v
+
+alerts:
+  # Alert system configuration [CONFIGURABLE]
+  max_active_alerts: 100
+  alert_history_days: 30
